@@ -1,0 +1,78 @@
+//Listen for submit
+document.querySelector('#loan-form').addEventListener('submit', function (e) {
+  //Hide results
+  document.querySelector('#results').style.display = 'none'
+
+  //Show loader
+  document.querySelector('#loading').style.display = 'block'
+
+  setTimeout(calculateResults, 2000)
+
+  e.preventDefault()
+})
+
+//Clack results 
+function calculateResults () {
+  //UI vars
+  const amount = document.querySelector('#amount')
+  const interest = document.querySelector('#interest')
+  const years = document.querySelector('#years')
+  const monthlyP = document.querySelector('#monthly-payment')
+  const totalP = document.querySelector('#total-payment')
+  const totalInterest = document.querySelector('#total-interest')
+
+  const principal = parseFloat(amount.value)
+  const calculatedInterest = parseFloat(interest.value) / 100 / 12
+  const calculatedPayments = parseFloat(years.value) * 12
+
+  //compute the monthly payment
+  const x = Math.pow(1 + calculatedInterest, calculatedPayments)
+  const monthly = (principal * x * calculatedInterest) / (x - 1)
+
+  if (isFinite(monthly)) {
+    monthlyP.value = monthly.toFixed(2)
+    totalP.value = (monthly * calculatedPayments).toFixed(2)
+    totalInterest.value = ((monthly * calculatedPayments) - principal).toFixed(2)
+    //Show results
+    document.querySelector('#results').style.display = 'block'
+
+    //Hide the loader
+    document.querySelector('#loading').style.display = 'none'
+  } else {
+    showError('Check your numbers')
+  }
+  
+  
+}
+
+//Show Error
+function showError (error) {
+  //Create div
+  const errorDiv = document.createElement('div')
+
+  //Get elements
+  const card = document.querySelector('.card')
+  const heading = document.querySelector('.heading')
+
+  //Add class
+  errorDiv.className = 'alert alert-danger'
+
+  //Create text node and append to div
+  errorDiv.appendChild(document.createTextNode(error))
+
+  //Insert error above the heading
+  card.insertBefore(errorDiv, heading)
+
+  //Clear error after 3 sec
+  setTimeout(() => {
+    // errorDiv.style.display = 'none'
+    document.querySelector('.alert').remove()
+  }, 3000)
+
+  //Hide results
+  document.querySelector('#results').style.display = 'none'
+
+  //Hide the loader
+  document.querySelector('#loading').style.display = 'none'
+}
+
